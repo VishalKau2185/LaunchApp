@@ -26,9 +26,9 @@ export default function Sidebar() {
             className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold tracking-tight shrink-0"
             style={{ background: "#ffffff", color: "#000000" }}
           >
-            LR
+            LP
           </div>
-          <span className="font-semibold text-sm tracking-tight" style={{ color: "#efefef" }}>LaunchRadar</span>
+          <span className="font-semibold text-sm tracking-tight" style={{ color: "#efefef" }}>Loudpost</span>
         </div>
       </div>
 

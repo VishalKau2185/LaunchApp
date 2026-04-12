@@ -41,8 +41,8 @@ export default function LandingPage() {
       }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", padding: "0 24px", height: 52, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 26, height: 26, background: "#fff", color: "#000", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 800, letterSpacing: "-0.02em" }}>LR</div>
-            <span style={{ fontWeight: 650, fontSize: 13, color: "#efefef", letterSpacing: "-0.01em" }}>LaunchRadar</span>
+            <div style={{ width: 26, height: 26, background: "#fff", color: "#000", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 800, letterSpacing: "-0.02em" }}>LP</div>
+            <span style={{ fontWeight: 650, fontSize: 13, color: "#efefef", letterSpacing: "-0.01em" }}>Loudpost</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <Link href="/login" style={{ fontSize: 13, color: "#444", padding: "6px 14px", borderRadius: 8, fontWeight: 500, textDecoration: "none" }}>
@@ -79,7 +79,7 @@ export default function LandingPage() {
           </h1>
 
           <p style={{ fontSize: 16, color: "#555", lineHeight: 1.65, marginBottom: 36, maxWidth: 420 }}>
-            LaunchRadar writes your daily launch posts across Reddit, Twitter, Hacker News, and 8 more platforms — then hands them to you ready to copy and post.
+            Loudpost writes your daily launch posts across Reddit, Twitter, Hacker News, and 8 more platforms — then hands them to you ready to copy and post.
           </p>
 
           <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 20 }}>
@@ -131,7 +131,7 @@ export default function LandingPage() {
           <PreviewCard
             platform="hacker_news" platformLabel="Hacker News" color="#f97316"
             destination="Show HN"
-            title="Show HN: LaunchRadar – AI writes your daily community posts"
+            title="Show HN: Loudpost – AI writes your daily community posts"
             body="I got tired of spending Sunday nights writing the same post 15 different ways for different communities. So I built this."
           />
 
@@ -174,7 +174,7 @@ export default function LandingPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 40 }}>
           {[
             { n: "01", title: "Describe your startup", body: "Name, description, what makes it different. AI extracts the right keywords automatically — no manual tagging required." },
-            { n: "02", title: "We build your community pool", body: "LaunchRadar scans Reddit, scores every subreddit for relevance, and verifies which ones actually allow self-promotion." },
+            { n: "02", title: "We build your community pool", body: "Loudpost scans Reddit, scores every subreddit for relevance, and verifies which ones actually allow self-promotion." },
             { n: "03", title: "Get 14 posts every morning", body: "Fresh AI-written posts across all platforms, ready to copy and paste. Takes 2 minutes to post them all." },
           ].map(({ n, title, body }) => (
             <div key={n}>
@@ -264,8 +264,8 @@ export default function LandingPage() {
       <footer style={{ borderTop: "1px solid #0d0d0d", padding: "24px" }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 20, height: 20, background: "#fff", color: "#000", borderRadius: 5, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 800 }}>LR</div>
-            <span style={{ fontSize: 12, color: "#222", fontWeight: 500 }}>LaunchRadar</span>
+            <div style={{ width: 20, height: 20, background: "#fff", color: "#000", borderRadius: 5, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 800 }}>LP</div>
+            <span style={{ fontSize: 12, color: "#222", fontWeight: 500 }}>Loudpost</span>
           </div>
           <p style={{ fontSize: 11, color: "#1e1e1e" }}>Free while in beta · Built for founders</p>
         </div>

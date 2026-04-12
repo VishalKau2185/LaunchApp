@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LaunchRadar — Post to communities in 2 minutes a day",
+  title: "Loudpost — Post to communities in 2 minutes a day",
   description: "Find communities that allow self-promotion, generate posts with AI, and grow your startup daily.",
 };
 

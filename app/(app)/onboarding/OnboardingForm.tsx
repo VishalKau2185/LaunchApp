@@ -84,7 +84,7 @@ export default function OnboardingForm({ initial }: Props) {
             <label className="text-xs font-medium" style={{ color: "#555" }}>Startup name <span style={{ color: "#ef4444" }}>*</span></label>
             <input
               name="name"
-              placeholder="e.g. LaunchRadar"
+              placeholder="e.g. Loudpost"
               required
               defaultValue={initial?.name ?? ""}
               className={inputCls}

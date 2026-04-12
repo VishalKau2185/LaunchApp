@@ -29,7 +29,7 @@ export default async function DashboardPage() {
     return (
       <div className="flex items-center justify-center min-h-screen p-8">
         <div className="text-center space-y-4 max-w-sm">
-          <h1 className="text-xl font-bold" style={{ color: "#f0f0f0" }}>Welcome to LaunchRadar</h1>
+          <h1 className="text-xl font-bold" style={{ color: "#f0f0f0" }}>Welcome to Loudpost</h1>
           <p className="text-sm" style={{ color: "#6b7280" }}>
             Add your startup to get daily posting opportunities across Reddit, Twitter, founder communities, blogs, and directories.
           </p>

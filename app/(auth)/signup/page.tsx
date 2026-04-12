@@ -24,9 +24,9 @@ export default function SignUpPage() {
       <div className="relative w-full max-w-sm">
         <div className="flex items-center gap-2.5 mb-8">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold" style={{ background: "#fff", color: "#000" }}>
-            LR
+            LP
           </div>
-          <span className="font-semibold text-sm tracking-tight" style={{ color: "#efefef" }}>LaunchRadar</span>
+          <span className="font-semibold text-sm tracking-tight" style={{ color: "#efefef" }}>Loudpost</span>
         </div>
 
         <div
