@@ -1,26 +1,111 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #080808;
+  --foreground: #efefef;
+  --card: #0f0f0f;
+  --card-border: #1c1c1c;
+  --muted-foreground: #555;
+  --secondary-foreground: #888;
+  --radius: 0.625rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-primary: #ffffff;
+  --color-primary-foreground: #080808;
+  --color-secondary: #161616;
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: #111;
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: #1a1a1a;
+  --color-accent-foreground: #efefef;
+  --color-destructive: #ef4444;
+  --color-border: var(--card-border);
+  --color-input: #111;
+  --color-ring: #fff;
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* ── Scrollbar ─────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #252525; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #333; }
+
+/* ── Page enter animation ──────────────────────────────────────────────── */
+main > * { animation: fadeUp 0.2s cubic-bezier(0.16,1,0.3,1) both; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Skeleton ──────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.animate-pulse {
+  background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+/* ── Dot grid background (landing) ────────────────────────────────────── */
+.dot-grid {
+  background-image: radial-gradient(circle, #1e1e1e 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Gradient text ─────────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #666 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glow on hover for primary buttons ────────────────────────────────── */
+.btn-primary {
+  background: #ffffff;
+  color: #000000;
+  transition: box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.btn-primary:hover {
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.3), 0 4px 20px rgba(255,255,255,0.08);
+  opacity: 0.92;
+}
+
+/* ── Card hover ────────────────────────────────────────────────────────── */
+.card-hover {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.card-hover:hover {
+  border-color: #2a2a2a !important;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+}
+
+/* ── Input focus ───────────────────────────────────────────────────────── */
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #333 !important;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
+}
+
+/* ── Smooth transitions on interactive elements ────────────────────────── */
+button, a { transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease; }

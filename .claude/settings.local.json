@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest . --typescript --tailwind --app --no-src-dir --no-git --import-alias \"@/*\" --yes)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --app --no-src-dir --no-git --import-alias \"@/*\" --yes --name launchradar)",
+      "Bash(cd /tmp)",
+      "Bash(npx create-next-app@latest launchradar --typescript --tailwind --app --no-src-dir --no-git --import-alias \"@/*\" --yes)",
+      "Bash(rsync -av /tmp/launchradar/ /c/Users/sausy/OneDrive/Documentos/LaunchApp/ --exclude=node_modules --exclude=.git)",
+      "Bash(npm install:*)",
+      "Bash(npx shadcn@latest init --yes --base-color slate)",
+      "Bash(npx shadcn@latest init --yes)",
+      "Bash(npx tsc:*)",
+      "Bash(npx next:*)"
+    ]
+  }
+}
