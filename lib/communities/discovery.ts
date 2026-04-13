@@ -14,6 +14,140 @@
 import { REDDIT_COMMUNITIES } from "./seed"
 import type { SeededCommunity } from "./seed"
 
+// ── Subreddits that do NOT allow self-promotion ───────────────────────────────
+// Verified manually: these communities explicitly ban promotional posts,
+// restrict to weekly megathreads, or are support communities where promotion
+// would be inappropriate. Filtered out regardless of seed data.
+const NO_PROMO_SUBS = new Set([
+  // Programming (strict no-self-promo, curated content/research only)
+  "programming", "learnprogramming", "javascript", "MachineLearning",
+  "datascience", "deeplearning", "ExperiencedDevs",
+  // AI (discussion-only or cracking down on AI tool spam)
+  "singularity", "ChatGPT",
+  // Design (critique/portfolio only, no tool promotion outside Friday threads)
+  "graphic_design", "logodesign",
+  // Fitness (strict — no app promotion, support community)
+  "Fitness", "loseit", "bodyweightfitness", "nutrition", "selfimprovement",
+  // Finance (strict — explicitly bans self-promo)
+  "personalfinance", "financialindependence",
+  // Mental health (support community — never promote here)
+  "mentalhealth", "therapy", "Anxiety",
+  // Pets (photo/support community, no promotion)
+  "dogs", "cats",
+  // Misc
+  "math", "Teachers", "photography", "LegalAdvice", "smallbusiness",
+  "taskade", "LifeProTips",
+])
+
+// ── Community-specific posting guidance ───────────────────────────────────────
+// Tells the AI exactly HOW to frame the post for that specific community.
+// Without this, posts sound generic and get removed for not fitting the culture.
+const POSTING_NOTES: Record<string, string> = {
+  // Tech showcase subs — frame as "I built X", technical angle
+  "webdev":      "Frame as a project showcase: 'I built X' opener, invite feedback, keep it technical and honest.",
+  "Python":      "Lead with what the tool does technically. Title like 'I built a Python tool that...' works well here.",
+  "nextjs":      "Frame as a Next.js build post. Mention architecture or interesting technical decisions.",
+  "reactjs":     "Frame as a React project showcase. Mention tech choices and invite critique.",
+  "typescript":  "Focus on the developer experience or type safety angle. Community appreciates technical depth.",
+  "node":        "Lead with a technical problem solved. 'I built a Node.js tool that...' framing.",
+  "golang":      "Focus on performance or simplicity angle. Go community appreciates no-bloat tools.",
+  "rust":        "Emphasize safety, performance, or memory efficiency. Rust community respects technical rigour.",
+  "django":      "Lead with the backend problem it solves. Django community likes pragmatic tools.",
+  "flask":       "Frame as a lightweight tool built with Flask. Keep it simple and focused.",
+  "vuejs":       "Frame as a Vue.js project. Mention component design or DX improvements.",
+  "sveltejs":    "Focus on how Svelte made the build better. Community appreciates the 'less framework' angle.",
+  "devops":      "Frame around the ops problem it solves. Metrics, reliability, or automation angle.",
+  "aws":         "Frame around the AWS problem it solves — scaling, cost, or automation.",
+  "selfhosted":  "Lead with privacy and self-hosting benefits. Community loves 'alternative to X' framing.",
+  "opensource":  "Emphasize open source nature, license, and contribution welcome angle.",
+  // Startup subs — be a founder, not a marketer
+  "SideProject":         "Be direct — this community is made for sharing side projects. Show what you built and why.",
+  "startups":            "Share as a founder post: the problem, your solution, what you learned. Not a sales pitch.",
+  "indiehackers":        "Share revenue, traction, or the honest founder journey. Numbers and transparency do well.",
+  "microsaas":           "Share the micro-SaaS angle: solo-built, specific problem, early MRR or users.",
+  "SaaS":                "Frame around the SaaS business model or problem being solved for B2B customers.",
+  "RoastMyStartup":      "Ask for brutally honest critical feedback. Name real weaknesses — the community rewards vulnerability.",
+  "alphaandbetausers":   "Lead with exactly what you need testers for. Make the sign-up link front and centre.",
+  "Entrepreneur_Feedback":"Ask a specific question and invite constructive critique. Pure promotion gets ignored.",
+  "entrepreneur":        "Share the founder story or business lesson. Value-first, product second.",
+  "Entrepreneur":        "Frame as a business insight or journey post. The community rewards substance over pitching.",
+  "GrowthHacking":       "Lead with a specific growth tactic or result. Tool as the mechanism, not the headline.",
+  "nocode":              "Highlight the no-code build process. Community loves 'built this without writing a line of code' angle.",
+  // Gaming — feedback is the culture
+  "gamedev":     "Use Feedback Friday framing. Describe what you built and ask for specific critique.",
+  "indiegaming": "Show the game or tool directly. Screenshots and GIFs outperform text-only posts.",
+  "indiegames":  "Post directly — community loves early indie projects. Include visuals if possible.",
+  "Unity3D":     "Lead with the Unity-specific problem solved or technique used.",
+  "godot":       "Frame around the Godot implementation. Community appreciates open-source commitment.",
+  "gamedesign":  "Focus on design mechanics or problems solved, not the product. Invite design discussion.",
+  // Creators — authentic story, not pitch
+  "NewTubers":    "Frame around the YouTube growth problem it solves. Creator-to-creator tone.",
+  "podcasting":   "Frame around the podcasting workflow problem it solves. Practical and direct.",
+  "newsletters":  "Share the newsletter growth or creation problem it solves. Community loves specifics.",
+  "blogging":     "Frame around the blogging workflow improvement. Show before/after if possible.",
+  "Creator_Economy": "Connect to monetisation or audience-building problem. Creator-first framing.",
+  // Fitness — practical tool, not ad
+  "running":  "Frame around a real running problem the tool solves. Personal story works well.",
+  "yoga":     "Connect to the practice first, tool second. Community appreciates authenticity over promotion.",
+  "cycling":  "Frame around a training or route problem solved. Community is gear-enthusiast friendly.",
+  "swimming": "Frame around a lap tracking or training problem. Practical and direct.",
+  "Meditation":"Focus on the mindfulness benefit, not the app features. Calm, grounded tone.",
+  // Education
+  "languagelearning": "Frame around the language learning problem it solves. Community loves specific languages.",
+  "edtech":     "Frame as a founder building for education. Share the teaching problem you solved.",
+  "GetStudying": "Frame around a specific studying workflow problem. Students appreciate practical tools.",
+  "Anki":       "If it integrates with or improves Anki, lead with that. Community is very tool-specific.",
+  // Remote/freelance
+  "digitalnomad": "Frame around the remote work or travel-while-working problem it solves.",
+  "freelance":    "Frame around a freelancer pain point: invoicing, clients, contracts, time tracking.",
+  "remotework":   "Frame around async collaboration or remote team problem it solves.",
+  "WorkOnline":   "Frame around a specific online income or work problem it solves.",
+  // Marketing
+  "digital_marketing": "Lead with a specific marketing result or problem. Data and case studies do well.",
+  "SEO":          "Frame around a specific SEO problem or workflow improvement. Community is technical.",
+  "growthhacking":"Lead with a specific growth result or tactic. Tool as the mechanism.",
+  "content_marketing": "Frame around a content workflow or distribution problem. Practical and specific.",
+  "emailmarketing": "Frame around a deliverability, growth, or automation problem it solves.",
+  "socialmedia":  "Frame around a specific social media workflow or growth problem.",
+  "copywriting":  "Frame around a copywriting workflow improvement. Community appreciates good copy in the post itself.",
+  "PPC":          "Frame around a specific paid ads problem: ROAS, automation, or reporting.",
+  // Finance/commerce
+  "fintech":         "Frame as a fintech founder solving a specific financial problem. B2B angle works well.",
+  "ecommerce":       "Frame around a specific ecommerce problem: conversion, fulfilment, or operations.",
+  "shopify":         "Frame around a specific Shopify seller problem. The community is very practical.",
+  "Etsy":            "Frame around an Etsy seller problem — listing, shipping, or customer management.",
+  "AmazonSeller":    "Frame around a specific Amazon FBA or selling problem.",
+  "realestateinvesting": "Frame around a specific real estate analysis or deal-finding problem.",
+  "landlord":        "Frame around a specific landlord management problem: tenants, maintenance, or accounting.",
+  "accounting":      "Frame around a specific accounting workflow problem for small businesses.",
+  "humanresources":  "Frame around a specific HR pain point: hiring, onboarding, or compliance.",
+  // Design
+  "web_design":    "Frame as a design showcase or tool that solves a specific web design problem.",
+  "UI_Design":     "Frame as a UI showcase or tool. Include screenshots if possible.",
+  "userexperience":"Frame around a UX research or usability problem. Community appreciates methodology.",
+  "Figma":         "Frame around a Figma workflow, plugin, or design system problem it solves.",
+  "branding":      "Frame around a brand identity or visual consistency problem.",
+  // Music
+  "WeAreTheMusicMakers": "Frame as a music production tool. Community loves workflow improvements.",
+  "audioengineering":    "Frame around a specific audio problem: mixing, mastering, or recording workflow.",
+  "edmproduction":       "Frame around an EDM production workflow problem. Practical and tool-focused.",
+  "makinghiphop":        "Frame around a beat-making or production workflow improvement.",
+  "Guitar":              "Frame around a specific guitar learning or practice problem it solves.",
+  "synthesizers":        "Frame around a synthesis or sound design workflow improvement.",
+  // Events
+  "EventProduction":  "Frame around a specific event production workflow problem.",
+  "eventplanning":    "Frame around a specific event planning or coordination problem it solves.",
+  "weddingplanning":  "Frame around a specific wedding planning pain point.",
+  "Filmmakers":       "Frame around a specific filmmaking workflow or production problem.",
+  "cinematography":   "Frame around a specific camera, lighting, or DOP workflow problem.",
+  "livesound":        "Frame around a live sound or PA system workflow problem.",
+  "videoproduction":  "Frame around a video production workflow problem.",
+  // Productivity
+  "productivity":  "Frame around a specific workflow or time management problem. Personal story works well.",
+  "Notion":        "Frame as a Notion workflow or template. The community loves practical implementations.",
+  "ObsidianMD":    "Frame around an Obsidian plugin, workflow, or PKM improvement.",
+}
+
 // ── Tokenisation ──────────────────────────────────────────────────────────────
 
 const STOP_WORDS = new Set([
@@ -122,6 +256,7 @@ interface ScoredCommunity {
 export interface SelectedCommunity {
   name: string
   url: string
+  postingNotes?: string
 }
 
 /**
@@ -138,14 +273,14 @@ export function selectStaticFounderCommunities(
   count = 4,
 ): SelectedCommunity[] {
   const pool = REDDIT_COMMUNITIES.filter(
-    (c) => STATIC_FOUNDER_NAMES.includes(c.name) && c.self_promo_allowed
+    (c) => STATIC_FOUNDER_NAMES.includes(c.name) && c.self_promo_allowed && c.links_allowed && !NO_PROMO_SUBS.has(c.name)
   ).sort((a, b) => (b.quality_score + b.activity_score) - (a.quality_score + a.activity_score))
 
   // Fresh first, then recently used
   const fresh  = pool.filter((c) => !recentlyUsed.has(c.name.toLowerCase()))
   const recent = pool.filter((c) =>  recentlyUsed.has(c.name.toLowerCase()))
 
-  return [...fresh, ...recent].slice(0, count).map((c) => ({ name: c.name, url: c.url }))
+  return [...fresh, ...recent].slice(0, count).map((c) => ({ name: c.name, url: c.url, postingNotes: POSTING_NOTES[c.name] }))
 }
 
 export function selectRedditCommunities(
@@ -160,7 +295,7 @@ export function selectRedditCommunities(
 
   // Score every eligible community
   const all: ScoredCommunity[] = REDDIT_COMMUNITIES
-    .filter((c) => c.self_promo_allowed)
+    .filter((c) => c.self_promo_allowed && c.links_allowed && !NO_PROMO_SUBS.has(c.name))
     .map((c) => {
       const tagScore = scoreTagOverlap(c.tags, tokens, phrases)
       const isFounderVertical = c.vertical === "startup" || c.vertical === "freelance"
@@ -198,15 +333,16 @@ export function selectRedditCommunities(
     if (!seen.has(s.c.name)) { seen.add(s.c.name); combined.push(s) }
   }
 
-  // 1. Fill niche slots from fresh pool first (up to count-2)
-  freshNiche.slice(0, count - 2).forEach(add)
-
-  // 2. Guarantee 2 startup subs — prefer fresh, fall back to stale
+  // 1. Guarantee 3 startup/founder subs first (general reach for any product)
+  // These are the communities every founder should post to regardless of niche.
   let startupAdded = 0
   for (const s of [...freshStartup, ...staleStartup]) {
-    if (startupAdded >= 2) break
+    if (startupAdded >= 3) break
     add(s); startupAdded++
   }
+
+  // 2. Fill remaining slots with niche subs (tagScore >= 6 = strong relevance match)
+  freshNiche.slice(0, count - 3).forEach(add)
 
   // 3. Fill remaining slots — fresh first, then stale as last resort
   for (const s of [...fresh, ...stale]) {
@@ -214,5 +350,5 @@ export function selectRedditCommunities(
     add(s)
   }
 
-  return combined.slice(0, count).map((s) => ({ name: s.c.name, url: s.c.url }))
+  return combined.slice(0, count).map((s) => ({ name: s.c.name, url: s.c.url, postingNotes: POSTING_NOTES[s.c.name] }))
 }

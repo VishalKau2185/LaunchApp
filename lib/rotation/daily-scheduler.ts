@@ -220,7 +220,7 @@ export async function getTodaysOpportunities(userId: string, dateOverride?: stri
   // Supplement: dynamic communities from Reddit API search that also pass
   //             the in-memory relevance filter (filters out off-topic results)
 
-  type CommunityRef = { name: string; url: string }
+  type CommunityRef = { name: string; url: string; postingNotes?: string }
 
   // In-memory selection — the authoritative, relevance-scored pool
   const scored = selectRedditCommunities(
@@ -282,8 +282,8 @@ export async function getTodaysOpportunities(userId: string, dateOverride?: stri
   try {
     // ── Slots 0–7: Reddit ───────────────────────────────────────────────────
     for (let i = 0; i < redditCommunities.length; i++) {
-      const { name, url } = redditCommunities[i]
-      const post = await generateRedditPost(startupInfo, name, i)
+      const { name, url, postingNotes } = redditCommunities[i]
+      const post = await generateRedditPost(startupInfo, name, i, undefined, postingNotes)
       rows.push({
         user_id: userId, date: today, platform: "reddit", community_id: null,
         post_url: post.title ? redditSubmitUrl(url, post.title, post.body) : `${url}submit`,

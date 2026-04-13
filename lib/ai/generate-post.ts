@@ -37,12 +37,17 @@ export async function generateRedditPost(
   startup: StartupInfo,
   communityName: string,
   slotIndex: number,
-  templateOverride?: TemplateType
+  templateOverride?: TemplateType,
+  postingNotes?: string,
 ): Promise<GeneratedPost> {
   const client = getAIClient()
   const template = templateOverride
     ? (require("@/lib/templates/post-templates").POST_TEMPLATES.find((t: { type: string }) => t.type === templateOverride) ?? getTemplateForSlot(slotIndex))
     : getTemplateForSlot(slotIndex)
+
+  const communityGuidance = postingNotes
+    ? `\nCommunity-specific guidance for r/${communityName}:\n${postingNotes}`
+    : ""
 
   const prompt = `Write a Reddit post for r/${communityName} about this startup:
 
@@ -54,6 +59,7 @@ Target audience: ${startup.targetAudience || "general"}
 
 Style to follow:
 ${template.redditStyle}
+${communityGuidance}
 
 Return only a JSON object with:
 - "title": the post title (string)
