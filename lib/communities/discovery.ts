@@ -14,29 +14,119 @@
 import { REDDIT_COMMUNITIES } from "./seed"
 import type { SeededCommunity } from "./seed"
 
-// ── Subreddits that do NOT allow self-promotion ───────────────────────────────
-// Verified manually: these communities explicitly ban promotional posts,
-// restrict to weekly megathreads, or are support communities where promotion
-// would be inappropriate. Filtered out regardless of seed data.
-const NO_PROMO_SUBS = new Set([
-  // Programming (strict no-self-promo, curated content/research only)
-  "programming", "learnprogramming", "javascript", "MachineLearning",
-  "datascience", "deeplearning", "ExperiencedDevs",
-  // AI (discussion-only or cracking down on AI tool spam)
-  "singularity", "ChatGPT",
-  // Design (critique/portfolio only, no tool promotion outside Friday threads)
-  "graphic_design", "logodesign",
-  // Fitness (strict — no app promotion, support community)
-  "Fitness", "loseit", "bodyweightfitness", "nutrition", "selfimprovement",
-  // Finance (strict — explicitly bans self-promo)
-  "personalfinance", "financialindependence",
-  // Mental health (support community — never promote here)
-  "mentalhealth", "therapy", "Anxiety",
-  // Pets (photo/support community, no promotion)
-  "dogs", "cats",
-  // Misc
-  "math", "Teachers", "photography", "LegalAdvice", "smallbusiness",
-  "taskade", "LifeProTips",
+// ── Whitelist approach: ONLY these communities are eligible ──────────────────
+// Every community here has been verified to:
+//   1. Explicitly allow self-promotion and external links
+//   2. Not require karma minimums or mod verification to post
+//   3. Have a community culture welcoming to founders sharing products
+//
+// This is intentionally conservative. It is better to miss a community
+// than to send users somewhere that will get their post removed.
+const VERIFIED_SUBS = new Set([
+  // ── PURPOSE-BUILT FOR SHARING PROJECTS (safest — no karma gates) ─────────
+  "SideProject",        // Literally made for side projects. Always works.
+  "IMadeThis",          // Literally made for sharing things you built.
+  "alphaandbetausers",  // Made for finding beta testers.
+  "RoastMyStartup",     // Made for startup feedback.
+  "Entrepreneur_Feedback", // Made for product/idea feedback.
+  "microsaas",          // Micro-SaaS founders, very welcoming.
+  "indiehackers",       // Indie hacker community, welcoming.
+  "SaaS",               // SaaS founders, welcoming.
+  "startupideas",       // Open to sharing and validating ideas.
+  "nocode",             // No-code tools, explicitly welcoming.
+  "GrowthHacking",      // Growth tools — welcoming to founders.
+
+  // ── STARTUP / FOUNDER (large but welcoming with substance) ───────────────
+  "entrepreneur",       // 1.2M, welcoming with value-add posts.
+  "startups",           // 2.7M, founder posts allowed.
+
+  // ── TECH (topic-open, welcoming to dev tools of any kind) ────────────────
+  "webdev",             // Showoff Saturday culture. Any web tool welcome.
+  "selfhosted",         // Explicitly welcoming to new self-hosted tools.
+  "opensource",         // Open source projects welcome.
+
+  // ── AI / TOOLS ────────────────────────────────────────────────────────────
+  "artificial",         // AI tools welcome, welcoming community.
+  "LocalLLaMA",         // Very welcoming to local/open AI tools.
+  "PromptEngineering",  // Prompt and AI tools welcome.
+
+  // ── PRODUCTIVITY ──────────────────────────────────────────────────────────
+  "productivity",       // Tools welcome with substance.
+  "Notion",             // Notion tools and templates explicitly welcome.
+  "ObsidianMD",         // Plugins and tools explicitly welcome.
+
+  // ── CREATOR ECONOMY ───────────────────────────────────────────────────────
+  "NewTubers",          // YouTube creator tools explicitly welcome.
+  "podcasting",         // Podcasting tools explicitly welcome.
+  "newsletters",        // Newsletter tools welcome, small community.
+  "blogging",           // Blogging tools welcome.
+  "Creator_Economy",    // Creator tools and products welcome.
+
+  // ── MUSIC / AUDIO ─────────────────────────────────────────────────────────
+  "WeAreTheMusicMakers", // Very welcoming to music production tools.
+  "audioengineering",   // Audio tools and plugins welcome.
+  "edmproduction",      // EDM tools welcome.
+  "makinghiphop",       // Beat-making tools welcome.
+  "synthesizers",       // Synth tools and plugins welcome.
+
+  // ── GAMING (feedback culture, welcoming) ──────────────────────────────────
+  "gamedev",            // Feedback Friday — any game/tool welcome.
+  "indiegaming",        // Indie games and tools explicitly welcome.
+  "indiegames",         // Share your indie project directly.
+
+  // ── FITNESS (tool-friendly communities) ───────────────────────────────────
+  "running",            // Running apps welcome.
+  "yoga",               // Yoga apps welcome.
+  "cycling",            // Cycling apps welcome.
+  "Meditation",         // Meditation apps welcome.
+
+  // ── EDUCATION ─────────────────────────────────────────────────────────────
+  "languagelearning",   // Language learning tools very welcome.
+  "edtech",             // EdTech products explicitly welcome.
+  "GetStudying",        // Study tools welcome.
+  "Anki",               // Anki tools and addons explicitly welcome.
+
+  // ── REMOTE WORK / FREELANCE ───────────────────────────────────────────────
+  "digitalnomad",       // Remote work tools welcome.
+  "freelance",          // Freelance tools welcome.
+  "remotework",         // Remote work tools welcome.
+  "WorkOnline",         // Online work platforms welcome.
+
+  // ── FINANCE / COMMERCE ────────────────────────────────────────────────────
+  "fintech",            // Fintech products welcome.
+  "ecommerce",          // Ecommerce tools welcome.
+  "shopify",            // Shopify apps explicitly welcome.
+  "Etsy",               // Etsy seller tools welcome.
+  "AmazonSeller",       // Amazon seller tools welcome.
+  "realestateinvesting",// Real estate tools welcome.
+  "landlord",           // Property management tools welcome.
+  "accounting",         // Accounting tools welcome.
+  "humanresources",     // HR tools welcome.
+
+  // ── DESIGN ────────────────────────────────────────────────────────────────
+  "web_design",         // Web design tools welcome.
+  "UI_Design",          // UI tools and showcases welcome.
+  "userexperience",     // UX tools welcome.
+  "Figma",              // Figma plugins and tools explicitly welcome.
+  "branding",           // Branding tools welcome.
+
+  // ── VIDEO / PHOTO ─────────────────────────────────────────────────────────
+  "videography",        // Video tools welcome.
+  "videoproduction",    // Video production tools welcome.
+  "Filmmakers",         // Film tools welcome.
+  "cinematography",     // Cinematography tools welcome.
+
+  // ── EVENTS / PRODUCTION ───────────────────────────────────────────────────
+  "EventProduction",    // Event production tools welcome.
+  "eventplanning",      // Event planning tools welcome.
+  "livesound",          // Live sound tools welcome.
+  "weddingplanning",    // Wedding planning tools welcome.
+
+  // ── MARKETING (welcoming, lower karma gates than SEO/PPC) ─────────────────
+  "content_marketing",  // Content tools welcome.
+  "emailmarketing",     // Email tools welcome.
+  "socialmedia",        // Social media tools welcome.
+  "copywriting",        // Copywriting tools welcome.
 ])
 
 // ── Community-specific posting guidance ───────────────────────────────────────
@@ -273,7 +363,7 @@ export function selectStaticFounderCommunities(
   count = 4,
 ): SelectedCommunity[] {
   const pool = REDDIT_COMMUNITIES.filter(
-    (c) => STATIC_FOUNDER_NAMES.includes(c.name) && c.self_promo_allowed && c.links_allowed && !NO_PROMO_SUBS.has(c.name)
+    (c) => STATIC_FOUNDER_NAMES.includes(c.name) && c.self_promo_allowed && c.links_allowed && VERIFIED_SUBS.has(c.name)
   ).sort((a, b) => (b.quality_score + b.activity_score) - (a.quality_score + a.activity_score))
 
   // Fresh first, then recently used
@@ -295,7 +385,7 @@ export function selectRedditCommunities(
 
   // Score every eligible community
   const all: ScoredCommunity[] = REDDIT_COMMUNITIES
-    .filter((c) => c.self_promo_allowed && c.links_allowed && !NO_PROMO_SUBS.has(c.name))
+    .filter((c) => c.self_promo_allowed && c.links_allowed && VERIFIED_SUBS.has(c.name))
     .map((c) => {
       const tagScore = scoreTagOverlap(c.tags, tokens, phrases)
       const isFounderVertical = c.vertical === "startup" || c.vertical === "freelance"
