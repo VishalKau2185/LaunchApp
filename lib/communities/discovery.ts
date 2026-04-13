@@ -23,22 +23,17 @@ import type { SeededCommunity } from "./seed"
 // This is intentionally conservative. It is better to miss a community
 // than to send users somewhere that will get their post removed.
 const VERIFIED_SUBS = new Set([
-  // ── PURPOSE-BUILT FOR SHARING PROJECTS (safest — no karma gates) ─────────
-  "SideProject",        // Literally made for side projects. Always works.
-  "IMadeThis",          // Literally made for sharing things you built.
-  "alphaandbetausers",  // Made for finding beta testers.
-  "RoastMyStartup",     // Made for startup feedback.
-  "Entrepreneur_Feedback", // Made for product/idea feedback.
-  "microsaas",          // Micro-SaaS founders, very welcoming.
-  "indiehackers",       // Indie hacker community, welcoming.
-  "SaaS",               // SaaS founders, welcoming.
-  "startupideas",       // Open to sharing and validating ideas.
-  "nocode",             // No-code tools, explicitly welcoming.
-  "GrowthHacking",      // Growth tools — welcoming to founders.
-
-  // ── STARTUP / FOUNDER (large but welcoming with substance) ───────────────
-  "entrepreneur",       // 1.2M, welcoming with value-add posts.
-  "startups",           // 2.7M, founder posts allowed.
+  // ── PURPOSE-BUILT FOR SHARING PROJECTS (truly karma-free, always works) ──
+  "SideProject",        // Literally made for side projects. No karma gate.
+  "IMadeThis",          // Literally made for sharing things you built. No karma gate.
+  "alphaandbetausers",  // Made for finding beta testers. No karma gate.
+  "RoastMyStartup",     // Made for startup feedback. No karma gate.
+  "Entrepreneur_Feedback", // Made for product/idea feedback. No karma gate.
+  "microsaas",          // Micro-SaaS founders, no karma gate.
+  "indiehackers",       // Indie hacker community, no karma gate.
+  "SaaS",               // SaaS founders, no karma gate.
+  "startupideas",       // Open to sharing and validating ideas. No karma gate.
+  "nocode",             // No-code tools, explicitly welcoming. No karma gate.
 
   // ── TECH (topic-open, welcoming to dev tools of any kind) ────────────────
   "webdev",             // Showoff Saturday culture. Any web tool welcome.
@@ -354,8 +349,8 @@ export interface SelectedCommunity {
  * These are your guaranteed reach for any product launch.
  */
 const STATIC_FOUNDER_NAMES = [
-  "SideProject", "startups", "SaaS", "indiehackers", "microsaas",
-  "IMadeThis", "entrepreneur", "RoastMyStartup", "alphaandbetausers", "GrowthHacking",
+  "SideProject", "SaaS", "indiehackers", "microsaas",
+  "IMadeThis", "RoastMyStartup", "alphaandbetausers", "startupideas", "nocode",
 ]
 
 export function selectStaticFounderCommunities(

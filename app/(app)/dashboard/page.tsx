@@ -114,6 +114,16 @@ export default async function DashboardPage() {
         </div>
       </div>
 
+      {/* Reddit warmup tip */}
+      {opportunities.some(o => o.platform === "reddit") && (
+        <div style={{ background: "#0d0d0d", border: "1px solid #1a1a1a", borderRadius: 10, padding: "10px 14px", display: "flex", alignItems: "flex-start", gap: 10 }}>
+          <span style={{ fontSize: 13, marginTop: 1 }}>💡</span>
+          <p style={{ fontSize: 12, color: "#444", lineHeight: 1.5, margin: 0 }}>
+            <span style={{ color: "#666", fontWeight: 600 }}>Reddit tip:</span> New accounts get better results after a few comments in each community first. Spend 5 minutes engaging before posting — it makes a real difference.
+          </p>
+        </div>
+      )}
+
       {opportunities.length === 0 ? (
         <div
           className="rounded-xl p-6 space-y-4"
