@@ -55,7 +55,7 @@ const DIR_PLATFORMS: { platform: Platform; url: string; name: string; reason: st
 
 function redditSubmitUrl(communityUrl: string, title: string, body: string): string {
   const base = communityUrl.endsWith("/") ? communityUrl : `${communityUrl}/`
-  return `${base}submit?${new URLSearchParams({ title: title.substring(0, 300), text: body.substring(0, 10000) })}`
+  return `${base}submit?${new URLSearchParams({ type: "self", title: title.substring(0, 300), text: body.substring(0, 10000) })}`
 }
 
 // ── Extract subreddit name from a Reddit URL ──────────────────────────────────
